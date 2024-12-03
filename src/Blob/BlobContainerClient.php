@@ -55,23 +55,31 @@ final class BlobContainerClient
         );
     }
 
-    public function create(): void
+    public function create(?array $addHeaders = null): void
     {
         try {
-            $this->client->put($this->uri, [
+            $options = [
                 'query' => [
                     'restype' => 'container',
                 ],
-            ]);
+            ];
+            if ($addHeaders) {
+                $options['headers'] = $addHeaders;
+            }
+
+            $this->client->put(
+                $this->uri,
+                $options,
+            );
         } catch (RequestException $e) {
             throw $this->exceptionFactory->create($e);
         }
     }
 
-    public function createIfNotExists(): void
+    public function createIfNotExists(?array $addHeaders = null): void
     {
         try {
-            $this->create();
+            $this->create($addHeaders);
         } catch (ContainerAlreadyExistsException) {
             // do nothing
         }
